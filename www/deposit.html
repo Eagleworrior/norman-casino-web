@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deposit</title>
+<style>
+body { background:black; color:white; text-align:center; font-family:Arial; }
+button { padding:15px; margin:10px; font-size:20px; border-radius:10px; }
+input { padding:10px; font-size:18px; }
+.panel { background:#111; padding:20px; margin:20px auto; width:350px; border-radius:10px; }
+</style>
+</head>
+<body>
+
+<h1>Deposit Dashboard</h1>
+
+<div class="panel">
+  <p><b>Paybill:</b> 880100</p>
+  <p><b>Account Number:</b> 1004508555</p>
+  <p>Minimum deposit: 50 credits</p>
+
+  <input id="amount" type="number" placeholder="Amount"><br><br>
+  <button onclick="deposit()">Deposit</button>
+  <p id="msg"></p>
+</div>
+
+<button onclick="location.href='index.html'">⬅ Back to Main</button>
+
+<script>
+function deposit() {
+  let amt = parseInt(document.getElementById("amount").value);
+  if (amt < 50) {
+    msg.textContent = "Minimum deposit is 50 credits.";
+    return;
+  }
+  msg.textContent = "Deposit successful (virtual credits only).";
+}
+</script>
+
+</body>
+</html>
+

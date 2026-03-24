@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Withdraw</title>
+<style>
+body { background:black; color:white; text-align:center; font-family:Arial; }
+button { padding:15px; margin:10px; font-size:20px; border-radius:10px; }
+input { padding:10px; font-size:18px; }
+.panel { background:#111; padding:20px; margin:20px auto; width:350px; border-radius:10px; }
+</style>
+</head>
+<body>
+
+<h1>Withdrawal Dashboard</h1>
+
+<div class="panel">
+  <p>Minimum withdrawal: 500 credits</p>
+
+  <input id="amount" type="number" placeholder="Amount"><br><br>
+  <button onclick="withdraw()">Withdraw</button>
+  <p id="msg"></p>
+</div>
+
+<button onclick="location.href='index.html'">⬅ Back to Main</button>
+
+<script>
+function withdraw() {
+  let amt = parseInt(document.getElementById("amount").value);
+  if (amt < 500) {
+    msg.textContent = "Minimum withdrawal is 500 credits.";
+    return;
+  }
+  msg.textContent = "Withdrawal processed (virtual only).";
+}
+</script>
+
+</body>
+</html>
+

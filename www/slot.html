@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Premium Slot Machine</title>
+<style>
+body {
+  background: radial-gradient(circle at top, #0a0a0f, #000);
+  color: white;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* Buttons */
+button {
+  padding: 15px 25px;
+  margin: 10px;
+  font-size: 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffb300, #ff6f00);
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(255, 200, 0, 0.7);
+}
+
+/* Balance + Mode */
+#mode {
+  margin-top: 10px;
+  padding: 8px 12px;
+  font-size: 18px;
+  border-radius: 10px;
+  border: none;
+}
+
+.balance-box {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: gold;
+  text-shadow: 0 0 10px gold;
+}
+
+/* Slot Machine Frame */
+#slot-frame {
+  width: 420px;
+  height: 240px;
+  margin: 30px auto;
+  background: #111;
+  border: 6px solid gold;
+  border-radius: 20px;
+  box-shadow: 0 0 35px gold;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Reel container */
+.reel {
+  width: 120px;
+  height: 240px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 3px solid #444;
+  background: black;
+  position: relative;
+}
+
+/* Reel strip (long list of fruits) */
+.reel-strip {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  transition: top 1s ease-out;
+}
+
+/* Fruit symbols */
+.fruit {
+  font-size: 60px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
+</head>
+<body>
+
+<h1 style="color: gold; text-shadow: 0 0 15px gold;">🎰 PREMIUM SLOT MACHINE 🎰</h1>
+
+<select id="mode" onchange="updateBalanceDisplay()">
+  <option value="demo">Demo Mode</option>
+  <option value="real">Real Mode</option>
+</select>
+
+<div class="balance-box">
+  Balance: <span id="balance">10000</span>
+</div>
+
+<div id="slot-frame">
+  <div class="reel"><div class="reel-strip" id="strip1"></div></div>
+  <div class="reel"><div class="reel-strip" id="strip2"></div></div>
+  <div class="reel"><div class="reel-strip" id="strip3"></div></div>
+</div>
+
+<button onclick="spin()">SPIN (Cost: 20)</button>
+
+<p id="result"></p>
+
+<button onclick="location.href='index.html'">⬅ Back to Main</button>
+
+<script>
+let demoBalance = 10000;
+let realBalance = 0;
+
+/* 12 fruits per reel */
+const fruits = ["🍒","🍋","🍉","⭐","💎","7️⃣","🍇","🍍","🥝","🍊","🍓","🔔"];
+
+/* Fill reels with fruits */
+function loadReels() {
+  for (let i = 1; i <= 3; i++) {
+    let strip = document.getElementById("strip" + i);
+    strip.innerHTML = "";
+    fruits.forEach(f => {
+      strip.innerHTML += `<div class='fruit'>${f}</div>`;
+    });
+  }
+}
+loadReels();
+
+function updateBalanceDisplay() {
+  let mode = document.getElementById("mode").value;
+  document.getElementById("balance").textContent =
+    mode === "demo" ? demoBalance : realBalance;
+}
+
+function spin() {
+  let mode = document.getElementById("mode").value;
+  let result = document.getElementById("result");
+
+  let balance = mode === "demo" ? demoBalance : realBalance;
+
+  if (balance < 20) {
+    if (mode === "real") {
+      result.textContent = "You must deposit first!";
+      setTimeout(() => location.href = "deposit.html", 1000);
+    } else {
+      result.textContent = "Not enough demo credits.";
+    }
+    return;
+  }
+
+  if (mode === "demo") demoBalance -= 20;
+  else realBalance -= 20;
+  updateBalanceDisplay();
+
+  result.textContent = "Spinning...";
+
+  /* Random stop positions */
+  let pos1 = Math.floor(Math.random() * 12);
+  let pos2 = Math.floor(Math.random() * 12);
+  let pos3 = Math.floor(Math.random() * 12);
+
+  /* Move strips downward */
+  document.getElementById("strip1").style.top = -(pos1 * 80) + "px";
+  document.getElementById("strip2").style.top = -(pos2 * 80) + "px";
+  document.getElementById("strip3").style.top = -(pos3 * 80) + "px";
+
+  setTimeout(() => {
+    let f1 = fruits[pos1];
+    let f2 = fruits[pos2];
+    let f3 = fruits[pos3];
+
+    if (f1 === f2 && f2 === f3) {
+      let winAmount = 200;
+      result.textContent = "✨ JACKPOT! You win: " + winAmount + " ✨";
+
+      if (mode === "demo") demoBalance += winAmount;
+      else realBalance += winAmount;
+    } else {
+      result.textContent = "Try again!";
+    }
+
+    updateBalanceDisplay();
+  }, 1000);
+}
+
+updateBalanceDisplay();
+</script>
+
+</body>
+</html>
+

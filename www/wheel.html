@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Casino Wheel</title>
+<style>
+body {
+  background: radial-gradient(circle at top, #050509, #000);
+  color: #fff;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+button {
+  padding: 12px 22px;
+  margin: 10px;
+  font-size: 18px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff9f1c, #ff5e00);
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(0,0,0,0.6);
+}
+
+#mode {
+  margin-top: 10px;
+  padding: 6px 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+}
+
+.balance-box {
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#wheel-container {
+  position: relative;
+  width: 420px;
+  height: 420px;
+  margin: 30px auto;
+}
+
+/* STATIC OUTER FRAME */
+#wheel-frame {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%);
+  box-shadow:
+    0 0 25px rgba(255,215,0,0.7),
+    0 0 60px rgba(255,0,0,0.4);
+  z-index: 1;
+}
+
+/* ROTATING INNER CORE */
+#wheel-core {
+  position: absolute;
+  width: 330px;
+  height: 330px;
+  border-radius: 50%;
+  background-image: url("wheel.png");
+  background-size: cover;
+  background-position: center;
+  transition: transform 2.5s cubic-bezier(.1,.8,.2,1.1);
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* GOLD GLOWING POINTER */
+#pointer {
+  width: 0;
+  height: 0;
+  margin: 0 auto;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-top: 45px solid gold;
+
+  filter: drop-shadow(0 0 6px gold)
+          drop-shadow(0 0 12px rgba(255,215,0,0.8))
+          drop-shadow(0 0 20px rgba(255,215,0,0.5));
+
+  animation: pointerGlow 1.5s infinite ease-in-out;
+
+  z-index: 10;
+}
+
+@keyframes pointerGlow {
+  0% {
+    filter: drop-shadow(0 0 6px gold)
+            drop-shadow(0 0 12px rgba(255,215,0,0.8));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px gold)
+            drop-shadow(0 0 25px rgba(255,215,0,1));
+  }
+  100% {
+    filter: drop-shadow(0 0 6px gold)
+            drop-shadow(0 0 12px rgba(255,215,0,0.8));
+  }
+}
+
+#result {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#cost-label {
+  font-size: 14px;
+  opacity: 0.8;
+}
+</style>
+</head>
+<body>
+
+<h1>🎡 High‑End Casino Wheel 🎡</h1>
+
+<select id="mode" onchange="updateBalanceDisplay()">
+  <option value="demo">Demo Mode</option>
+  <option value="real">Real Mode</option>
+</select>
+
+<div class="balance-box">
+  Balance: <span id="balance">10000</span>
+</div>
+
+<div id="pointer"></div>
+
+<div id="wheel-container">
+  <div id="wheel-frame"></div>
+  <div id="wheel-core"></div>
+</div>
+
+<button onclick="spin()">SPIN</button>
+<div id="cost-label">Cost per spin: 20</div>
+
+<p id="result"></p>
+
+<button onclick="location.href='index.html'">⬅ Back to Main</button>
+
+<script>
+let demoBalance = 10000;
+let realBalance = 0;
+
+/* Roulette wheel has 37 slices (0–36) */
+const sliceCount = 37;
+const sliceAngle = 360 / sliceCount;
+let currentRotation = 0;
+
+function updateBalanceDisplay() {
+  const mode = document.getElementById("mode").value;
+  document.getElementById("balance").textContent =
+    mode === "demo" ? demoBalance : realBalance;
+}
+
+function spin() {
+  const mode = document.getElementById("mode").value;
+  const result = document.getElementById("result");
+
+  let balance = mode === "demo" ? demoBalance : realBalance;
+
+  if (balance < 20) {
+    if (mode === "real") {
+      result.textContent = "You must deposit first!";
+      setTimeout(() => location.href = "deposit.html", 1000);
+    } else {
+      result.textContent = "Not enough demo credits.";
+    }
+    return;
+  }
+
+  if (mode === "demo") demoBalance -= 20;
+  else realBalance -= 20;
+  updateBalanceDisplay();
+
+  const core = document.getElementById("wheel-core");
+
+  const fullRotations = Math.floor(Math.random() * 5) + 5;
+  const extra = Math.floor(Math.random() * 360);
+  const rotation = fullRotations * 360 + extra;
+
+  currentRotation += rotation;
+  core.style.transform = `translate(-50%, -50%) rotate(${currentRotation}deg)`;
+
+  result.textContent = "Spinning...";
+
+  setTimeout(() => {
+    let final = currentRotation % 360;
+    if (final < 0) final += 360;
+
+    let pointerAngle = (final + 180) % 360;
+    let index = Math.floor(pointerAngle / sliceAngle);
+
+    let winningNumber = index;
+
+    result.textContent = "You won: " + winningNumber;
+
+    if (mode === "demo") demoBalance += winningNumber;
+    else realBalance += winningNumber;
+
+    updateBalanceDisplay();
+  }, 2600);
+}
+
+updateBalanceDisplay();
+</script>
+
+</body>
+</html>
+
