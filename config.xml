@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.eaglex.normanCasino" version="1.0.0" xmlns="http://www.w3.org/ns/widgets">
+    <name>NormanCasino</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author>
+
+    <content src="index.html" />
+
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+
+    <platform name="android">
+        <preference name="ADMOB_APP_ID" value="ca-app-pub-6944429902972543~9808781917" />
+    </platform>
+</widget>
+
