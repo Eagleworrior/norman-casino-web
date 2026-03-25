@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Neon Casino - Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at center, #12001f, #000000 70%);
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+
+  #top-balance-bar {
+    width: 100%;
+    padding: 12px 0;
+    background: linear-gradient(90deg, #ff00ff, #00ffea);
+    color: #000010;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 0 20px #ff00ff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+  }
+  #top-balance-label { color: #000010; text-shadow: 0 0 10px #ffffff; }
+  #top-balance-value { color: #ffea00; text-shadow: 0 0 10px #ffea00; }
+
+  body { padding-top: 80px; }
+
+  h1 {
+    font-size: 40px;
+    margin-top: 20px;
+    text-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffea;
+    font-weight: bold;
+  }
+  h1 span:nth-child(1) { color: #ffea00; }
+  h1 span:nth-child(2) { color: #00ffea; }
+  h1 span:nth-child(3) { color: #ff00ff; }
+
+  .card {
+    margin: 30px auto;
+    max-width: 400px;
+    background: #050015;
+    border-radius: 18px;
+    border: 3px solid #ff00ff;
+    box-shadow: 0 0 30px #ff00ff, 0 0 40px #00ffea;
+    padding: 20px;
+    text-align: left;
+  }
+
+  .row {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+
+  .label {
+    color: #00ffea;
+    font-weight: bold;
+  }
+
+  #vip-level {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  #avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #00ffea, #000020);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 15px auto;
+    box-shadow: 0 0 20px #00ffea;
+  }
+
+  .btn {
+    padding: 10px 18px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: linear-gradient(90deg, #ff00ff, #00ffea);
+    color: #000010;
+    box-shadow: 0 0 20px #ff00ff;
+    margin-top: 10px;
+  }
+  .btn:hover { transform: scale(1.05); filter: brightness(1.15); }
+</style>
+</head>
+
+<body>
+
+<div id="top-balance-bar">
+  <span id="top-balance-label">BALANCE:</span>
+  <span id="top-balance-value">0</span>
+</div>
+
+<h1>
+  <span>PLAYER</span> <span>PROFILE</span> <span>CENTER</span>
+</h1>
+
+<div class="card">
+  <div id="avatar">🎲</div>
+
+  <div class="row">
+    <span class="label">Display Name:</span>
+    <span id="display-name">Loading...</span>
+  </div>
+
+  <div class="row">
+    <span class="label">Email:</span>
+    <span id="email">Loading...</span>
+  </div>
+
+  <div class="row">
+    <span class="label">User ID:</span>
+    <span id="uid">Loading...</span>
+  </div>
+
+  <div class="row">
+    <span class="label">VIP Level:</span>
+    <span id="vip-level">Bronze</span>
+  </div>
+
+  <div class="row">
+    <span class="label">Total Balance:</span>
+    <span id="profile-balance">0</span>
+  </div>
+
+  <button class="btn" onclick="location.href='index.html'">⬅ Back to Lobby</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDsK3umDd8f2ujLAjIZkv10mtvFNkCs2fA",
+  authDomain: "norman-casino.firebaseapp.com",
+  projectId: "norman-casino",
+  storageBucket: "norman-casino.firebasestorage.app",
+  messagingSenderId: "727231313437",
+  appId: "1:727231313437:web:f0e60b94cf8f97cb30f8f4"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+let currentUser = null;
+let globalBalance = 0;
+
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
+  currentUser = user;
+  document.getElementById("email").textContent = user.email || "Unknown";
+  document.getElementById("uid").textContent = user.uid;
+  document.getElementById("display-name").textContent = user.displayName || "Neon Player";
+
+  const initial = (user.email || "N")[0].toUpperCase();
+  document.getElementById("avatar").textContent = initial;
+
+  await loadGlobalBalance();
+});
+
+async function loadGlobalBalance() {
+  const docRef = db.collection("users").doc(currentUser.uid);
+  const snap = await docRef.get();
+  if (!snap.exists) {
+    await docRef.set({ balance: 0 });
+    globalBalance = 0;
+  } else {
+    globalBalance = snap.data().balance || 0;
+  }
+  document.getElementById("top-balance-value").textContent = globalBalance;
+  document.getElementById("profile-balance").textContent = globalBalance;
+  updateVipLevel();
+}
+
+function updateVipLevel() {
+  const vipEl = document.getElementById("vip-level");
+  let level = "Bronze";
+  let color = "#cd7f32";
+
+  if (globalBalance >= 10000) {
+    level = "Diamond";
+    color = "#00fff7";
+  } else if (globalBalance >= 5000) {
+    level = "Platinum";
+    color = "#e5e4e2";
+  } else if (globalBalance >= 2000) {
+    level = "Gold";
+    color = "#ffd700";
+  } else if (globalBalance >= 500) {
+    level = "Silver";
+    color = "#c0c0c0";
+  }
+
+  vipEl.textContent = level;
+  vipEl.style.color = color;
+  vipEl.style.textShadow = "0 0 15px " + color;
+}
+</script>
+
+</body>
+</html>
+

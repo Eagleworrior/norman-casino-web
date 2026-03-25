@@ -12,13 +12,28 @@
     color: white;
     text-align: center;
     padding: 20px;
-    animation: fadeIn 1s ease-out;
+    overflow-x: hidden;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.97); }
-    to { opacity: 1; transform: scale(1); }
+  /* TOP BALANCE BAR */
+  #top-balance-bar {
+    width: 100%;
+    padding: 12px 0;
+    background: linear-gradient(90deg, #ff00ff, #00ffea);
+    color: #000010;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 0 20px #ff00ff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999;
   }
+  #top-balance-label { color: #000010; text-shadow: 0 0 10px #ffffff; }
+  #top-balance-value { color: #ffea00; text-shadow: 0 0 10px #ffea00; }
+
+  body { padding-top: 80px; }
 
   h1 {
     font-size: 38px;
@@ -26,7 +41,6 @@
     text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffea;
     font-weight: bold;
   }
-
   h1 span:nth-child(1) { color: #ffea00; }
   h1 span:nth-child(2) { color: #00ffea; }
   h1 span:nth-child(3) { color: #ff00ff; }
@@ -44,7 +58,7 @@
 
   .balance-box {
     margin-top: 15px;
-    font-size: 26px;
+    font-size: 22px;
     font-weight: bold;
     color: #ffea00;
     text-shadow: 0 0 12px #ffea00;
@@ -62,6 +76,7 @@
     justify-content: space-around;
     align-items: center;
     overflow: hidden;
+    position: relative;
   }
 
   .reel {
@@ -101,11 +116,7 @@
     box-shadow: 0 0 20px #ff00ff;
     transition: 0.2s;
   }
-
-  .spin-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.2);
-  }
+  .spin-btn:hover { transform: scale(1.05); filter: brightness(1.2); }
 
   #result {
     margin-top: 20px;
@@ -127,15 +138,49 @@
     box-shadow: 0 0 15px #ff00ff;
     transition: 0.2s;
   }
+  .back-btn:hover { transform: scale(1.05); filter: brightness(1.15); }
 
-  .back-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.15);
+  /* FLAMES */
+  #left-flame, #right-flame {
+    position: fixed;
+    bottom: 0;
+    width: 120px;
+    height: 220px;
+    pointer-events: none;
+    z-index: 10;
+  }
+  #left-flame {
+    left: 0;
+    background: radial-gradient(circle at top, #00ff00, transparent 60%);
+    filter: blur(4px) drop-shadow(0 0 25px #00ff00);
+    animation: flameLeft 1.8s infinite ease-in-out;
+  }
+  #right-flame {
+    right: 0;
+    background: radial-gradient(circle at top, #b000ff, transparent 60%);
+    filter: blur(4px) drop-shadow(0 0 25px #b000ff);
+    animation: flameRight 1.8s infinite ease-in-out;
+  }
+  @keyframes flameLeft {
+    0%,100% { transform: translateY(0) scaleY(1); opacity: 0.8; }
+    50% { transform: translateY(-20px) scaleY(1.2); opacity: 1; }
+  }
+  @keyframes flameRight {
+    0%,100% { transform: translateY(0) scaleY(1); opacity: 0.8; }
+    50% { transform: translateY(-25px) scaleY(1.25); opacity: 1; }
   }
 </style>
 </head>
 
 <body>
+
+<div id="left-flame"></div>
+<div id="right-flame"></div>
+
+<div id="top-balance-bar">
+  <span id="top-balance-label">BALANCE:</span>
+  <span id="top-balance-value">0</span>
+</div>
 
 <h1>
   <span>NEON</span> <span>TURBO</span> <span>SLOTS</span>
@@ -147,7 +192,7 @@
 </select>
 
 <div class="balance-box">
-  Balance: <span id="balance">0</span>
+  Game Balance: <span id="balance">0</span>
 </div>
 
 <div id="slot-frame">
@@ -160,31 +205,38 @@
 
 <p id="result"></p>
 
-<button class="back-btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
+<button class="back-btn" onclick="location.href='index.html'">⬅ Back to Lobby</button>
 
-<!-- FIREBASE SDK (compat) -->
+<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script>
-// TODO: replace with your real Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyDsK3umDd8f2ujLAjIZkv10mtvFNkCs2fA",
   authDomain: "norman-casino.firebaseapp.com",
   projectId: "norman-casino",
-  storageBucket: "norman-casino.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  storageBucket: "norman-casino.firebasestorage.app",
+  messagingSenderId: "727231313437",
+  appId: "1:727231313437:web:f0e60b94cf8f97cb30f8f4"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
-</script>
 
-<!-- CONFETTI -->
-<script>
+let currentUser = null;
+let globalBalance = 0;
+let demoBalance = 10000;
+let realBalance = 0;
+
+/* SOUNDS */
+const spinSound = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+const winSound  = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+const loseSound = new Audio("https://actions.google.com/sounds/v1/cartoon/metal_clank.ogg");
+
+/* CONFETTI */
 function launchConfetti() {
   const duration = 1500;
   const end = Date.now() + duration;
@@ -219,21 +271,12 @@ function launchConfetti() {
     }
   })();
 }
-</script>
 
-<script>
-let demoBalance = 10000;
-let realBalance = 0;   // from Firebase
-let currentUser = null;
-
-/* 100+ FRUITS & SYMBOLS */
+/* FRUITS */
 const fruits = [];
 const base = ["🍒","🍋","🍉","⭐","💎","7️⃣","🍇","🍍","🥝","🍊","🍓","🔔","🍈","🥥","🍏","🍐","🍑"];
-for (let i = 0; i < 7; i++) {
-  fruits.push(...base);
-}
+for (let i = 0; i < 7; i++) fruits.push(...base);
 
-/* LOAD REELS */
 function loadReels() {
   for (let i = 1; i <= 3; i++) {
     let strip = document.getElementById("strip" + i);
@@ -245,53 +288,74 @@ function loadReels() {
 }
 loadReels();
 
-/* FIRESTORE BALANCE HELPERS */
-async function getRealBalance() {
-  if (!currentUser) return 0;
+/* GLOBAL BALANCE HELPERS */
+async function loadGlobalBalance() {
   const docRef = db.collection("users").doc(currentUser.uid);
   const snap = await docRef.get();
   if (!snap.exists) {
     await docRef.set({ balance: 0 });
-    return 0;
+    globalBalance = 0;
+  } else {
+    globalBalance = snap.data().balance || 0;
   }
-  return snap.data().balance || 0;
+  realBalance = globalBalance;
+  document.getElementById("top-balance-value").textContent = globalBalance;
+  updateBalanceDisplay();
 }
 
-async function setRealBalance(amount) {
-  if (!currentUser) return;
+async function updateGlobalBalance(newAmount) {
+  globalBalance = newAmount;
+  realBalance = newAmount;
   await db.collection("users").doc(currentUser.uid).set(
-    { balance: amount },
+    { balance: globalBalance },
     { merge: true }
   );
+  document.getElementById("top-balance-value").textContent = globalBalance;
+  updateBalanceDisplay();
 }
 
-/* AUTH STATE */
+/* TRANSACTION LOG */
+async function logTransaction(type, amount, extra = {}) {
+  if (!currentUser) return;
+  await db.collection("users")
+          .doc(currentUser.uid)
+          .collection("transactions")
+          .add({
+            type,
+            amount,
+            game: "slot",
+            time: firebase.firestore.FieldValue.serverTimestamp(),
+            ...extra
+          });
+}
+
+/* AUTH */
 auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-    // redirect to login if not logged in
-    window.location.href = "login.html";
-    return;
+  if (user) {
+    currentUser = user;
+    await loadGlobalBalance();
+  } else {
+    setTimeout(() => {
+      if (!auth.currentUser) location.href = "login.html";
+    }, 500);
   }
-  currentUser = user;
-  realBalance = await getRealBalance();
-  updateBalanceDisplay();
 });
 
-/* UPDATE BALANCE DISPLAY */
+/* UI BALANCE */
 function updateBalanceDisplay() {
   const mode = document.getElementById("mode").value;
-  const balSpan = document.getElementById("balance");
-  if (mode === "demo") {
-    balSpan.textContent = demoBalance;
-  } else {
-    balSpan.textContent = realBalance;
-  }
+  const span = document.getElementById("balance");
+  if (mode === "demo") span.textContent = demoBalance;
+  else span.textContent = realBalance;
 }
 
-/* SUPER FAST SPINNING SLOT MACHINE */
+/* SPIN */
 async function spin() {
   const mode = document.getElementById("mode").value;
   const result = document.getElementById("result");
+
+  spinSound.currentTime = 0;
+  spinSound.play();
 
   if (mode === "demo") {
     if (demoBalance < 20) {
@@ -300,14 +364,17 @@ async function spin() {
     }
     demoBalance -= 20;
   } else {
-    // REAL MODE
-    realBalance = await getRealBalance();
+    if (!currentUser) {
+      result.textContent = "Please login first.";
+      return;
+    }
     if (realBalance < 20) {
       result.textContent = "You must deposit first!";
       return;
     }
     realBalance -= 20;
-    await setRealBalance(realBalance);
+    await updateGlobalBalance(realBalance);
+    await logTransaction("slot_spin_cost", -20);
   }
 
   updateBalanceDisplay();
@@ -322,7 +389,6 @@ async function spin() {
   strips.forEach(strip => strip.style.transition = "none");
 
   const spinIntervals = [];
-
   strips.forEach((strip, index) => {
     spinIntervals[index] = setInterval(() => {
       const rand = Math.floor(Math.random() * fruits.length);
@@ -351,15 +417,20 @@ async function spin() {
         const winAmount = 500;
         result.textContent = "💥 MEGA WIN! You win: " + winAmount + " 💥";
         launchConfetti();
+        winSound.currentTime = 0;
+        winSound.play();
 
         if (mode === "demo") {
           demoBalance += winAmount;
         } else {
           realBalance += winAmount;
-          await setRealBalance(realBalance);
+          await updateGlobalBalance(realBalance);
+          await logTransaction("slot_win", winAmount, { combo: f1 + f2 + f3 });
         }
       } else {
         result.textContent = "Try again!";
+        loseSound.currentTime = 0;
+        loseSound.play();
       }
 
       updateBalanceDisplay();
