@@ -1,87 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Norman Casino - Withdraw</title>
+<title>Neon Casino - Withdraw</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
   body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: radial-gradient(circle at bottom, #00ffea, #000020 60%, #000000);
+    background: radial-gradient(circle at top, #ff00ff, #000020 60%, #000000);
     color: white;
     text-align: center;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     padding: 20px;
-    animation: fadeIn 1s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.97); }
-    to { opacity: 1; transform: scale(1); }
   }
 
   h1 {
-    font-size: 36px;
-    margin-bottom: 15px;
-    text-shadow: 0 0 12px #00ffea, 0 0 20px #ff00ff;
+    font-size: 38px;
+    margin-top: 10px;
+    text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffea;
+    font-weight: bold;
   }
-
   h1 span:nth-child(1) { color: #ffea00; }
   h1 span:nth-child(2) { color: #00ffea; }
   h1 span:nth-child(3) { color: #ff00ff; }
 
-  .box {
-    background: rgba(0, 0, 0, 0.45);
-    border: 2px solid rgba(255, 255, 255, 0.25);
-    border-radius: 18px;
-    padding: 25px;
-    width: 90%;
-    max-width: 450px;
-    margin: 0 auto;
-    box-shadow: 0 0 25px rgba(0,255,255,0.4), 0 0 35px rgba(255,0,255,0.3);
-    animation: glow 2s infinite alternate;
-  }
-
-  @keyframes glow {
-    from { box-shadow: 0 0 20px #00ffea; }
-    to { box-shadow: 0 0 30px #ff00ff; }
-  }
-
-  .label {
-    font-size: 20px;
-    margin-bottom: 10px;
+  .balance-box {
+    margin-top: 15px;
+    font-size: 26px;
+    font-weight: bold;
     color: #ffea00;
-    text-shadow: 0 0 10px #ffea00;
+    text-shadow: 0 0 12px #ffea00;
+  }
+
+  .card {
+    margin: 30px auto;
+    max-width: 400px;
+    background: #000010;
+    border-radius: 18px;
+    border: 3px solid #ff00ff;
+    box-shadow: 0 0 30px #ff00ff, 0 0 40px #00ffea;
+    padding: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 18px;
+    color: #00ffea;
   }
 
   input {
-    width: 80%;
-    padding: 12px;
-    font-size: 18px;
+    width: 100%;
+    padding: 10px;
     border-radius: 10px;
     border: none;
-    outline: none;
+    font-size: 18px;
     margin-bottom: 15px;
-    background: #000010;
-    color: #00ffea;
-    box-shadow: 0 0 10px rgba(0,255,255,0.4);
+    text-align: center;
   }
 
   .btn {
     padding: 12px 20px;
     font-size: 20px;
-    border-radius: 12px;
+    border-radius: 14px;
     border: none;
     cursor: pointer;
     font-weight: bold;
     background: linear-gradient(90deg, #ff00ff, #00ffea);
     color: #000010;
-    box-shadow: 0 0 15px rgba(255,0,255,0.7);
-    transition: 0.2s;
+    box-shadow: 0 0 20px #ff00ff;
+    margin: 5px;
   }
 
   .btn:hover {
@@ -89,30 +77,10 @@
     filter: brightness(1.15);
   }
 
-  #msg {
+  #message {
     margin-top: 15px;
     font-size: 18px;
-    color: #ffea00;
     text-shadow: 0 0 10px #ffea00;
-  }
-
-  .back-btn {
-    margin-top: 30px;
-    padding: 12px 20px;
-    font-size: 18px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    background: linear-gradient(90deg, #00ffea, #ff00ff);
-    color: #000010;
-    box-shadow: 0 0 15px rgba(255,0,255,0.7);
-    transition: 0.2s;
-  }
-
-  .back-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.15);
   }
 </style>
 </head>
@@ -120,34 +88,100 @@
 <body>
 
 <h1>
-  <span>WITHDRAW</span> <span>YOUR</span> <span>WINNINGS</span>
+  <span>NEON</span> <span>CASH</span> <span>WITHDRAW</span>
 </h1>
 
-<div class="box">
-
-  <div class="label">Minimum Withdrawal: 500 Credits</div>
-
-  <input id="amount" type="number" placeholder="Enter amount">
-
-  <button class="btn" onclick="withdraw()">Withdraw</button>
-
-  <div id="msg"></div>
-
+<div class="balance-box">
+  Current Balance: <span id="balance">0</span>
 </div>
 
-<button class="back-btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
+<div class="card">
+  <label for="amount">Withdraw amount</label>
+  <input type="number" id="amount" min="1" placeholder="Enter amount">
+
+  <button class="btn" onclick="quickWithdraw(100)">-100</button>
+  <button class="btn" onclick="quickWithdraw(500)">-500</button>
+  <button class="btn" onclick="quickWithdraw(1000)">-1000</button>
+
+  <br><br>
+  <button class="btn" onclick="withdraw()">Confirm Withdraw</button>
+</div>
+
+<p id="message"></p>
+
+<button class="btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script>
-function withdraw() {
-  let amt = parseInt(document.getElementById("amount").value);
-  let msg = document.getElementById("msg");
+const firebaseConfig = {
+  apiKey: "AIzaSyDsK3umDd8f2ujLAjIZkv10mtvFNkCs2fA",
+  authDomain: "norman-casino.firebaseapp.com",
+  projectId: "norman-casino",
+  storageBucket: "norman-casino.firebasestorage.app",
+  messagingSenderId: "727231313437",
+  appId: "1:727231313437:web:f0e60b94cf8f97cb30f8f4"
+};
 
-  if (!amt || amt < 500) {
-    msg.textContent = "Minimum withdrawal is 500 credits.";
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+let currentUser = null;
+let balance = 0;
+
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
+  currentUser = user;
+  await loadBalance();
+});
+
+async function loadBalance() {
+  const docRef = db.collection("users").doc(currentUser.uid);
+  const snap = await docRef.get();
+  if (!snap.exists) {
+    await docRef.set({ balance: 0 });
+    balance = 0;
+  } else {
+    balance = snap.data().balance || 0;
+  }
+  document.getElementById("balance").textContent = balance;
+}
+
+function quickWithdraw(amount) {
+  const input = document.getElementById("amount");
+  input.value = (Number(input.value) || 0) + amount;
+}
+
+async function withdraw() {
+  const msg = document.getElementById("message");
+  const input = document.getElementById("amount");
+  const amount = Number(input.value);
+
+  if (!amount || amount <= 0) {
+    msg.textContent = "Enter a valid amount.";
     return;
   }
 
-  msg.textContent = "Your withdrawal request has been received.";
+  if (amount > balance) {
+    msg.textContent = "Not enough balance.";
+    return;
+  }
+
+  balance -= amount;
+  await db.collection("users").doc(currentUser.uid).set(
+    { balance: balance },
+    { merge: true }
+  );
+
+  document.getElementById("balance").textContent = balance;
+  msg.textContent = "✅ Withdraw successful!";
+  input.value = "";
 }
 </script>
 

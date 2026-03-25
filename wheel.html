@@ -12,6 +12,12 @@
     color: white;
     text-align: center;
     padding: 20px;
+    animation: fadeIn 1s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
   }
 
   h1 {
@@ -43,13 +49,13 @@
     text-shadow: 0 0 12px #ffea00;
   }
 
-  /* DOWNWARD ARROW */
+  /* ARROW POINTING DOWN */
   #arrow {
     width: 0;
     height: 0;
     border-left: 35px solid transparent;
     border-right: 35px solid transparent;
-    border-top: 60px solid #ffea00; /* POINTS DOWN */
+    border-top: 60px solid #ffea00; /* down */
     margin: 0 auto;
     margin-bottom: -10px;
     filter: drop-shadow(0 0 10px #ffea00)
@@ -84,11 +90,17 @@
     background: linear-gradient(90deg, #ff00ff, #00ffea);
     color: #000010;
     box-shadow: 0 0 20px #ff00ff;
+    transition: 0.2s;
+  }
+
+  .spin-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
   }
 
   #result {
     margin-top: 20px;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
     text-shadow: 0 0 12px #ffea00;
   }
@@ -104,6 +116,12 @@
     background: linear-gradient(90deg, #00ffea, #ff00ff);
     color: #000010;
     box-shadow: 0 0 15px #ff00ff;
+    transition: 0.2s;
+  }
+
+  .back-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.15);
   }
 </style>
 </head>
@@ -120,10 +138,9 @@
 </select>
 
 <div class="balance-box">
-  Balance: <span id="balance">10000</span>
+  Balance: <span id="balance">0</span>
 </div>
 
-<!-- ARROW POINTING DOWN -->
 <div id="arrow"></div>
 
 <div id="wheel-container">
@@ -136,36 +153,137 @@
 
 <button class="back-btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
 
+<!-- FIREBASE SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDsK3umDd8f2ujLAjIZkv10mtvFNkCs2fA",
+  authDomain: "norman-casino.firebaseapp.com",
+  projectId: "norman-casino",
+  storageBucket: "norman-casino.firebasestorage.app",
+  messagingSenderId: "727231313437",
+  appId: "1:727231313437:web:f0e60b94cf8f97cb30f8f4"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+</script>
+
+<!-- CONFETTI -->
+<script>
+function launchConfetti() {
+  const duration = 1500;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    const colors = ["#ff00ff", "#00ffea", "#ffea00", "#ffffff"];
+    const particle = document.createElement("div");
+
+    particle.style.position = "fixed";
+    particle.style.width = "10px";
+    particle.style.height = "10px";
+    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.top = Math.random() * window.innerHeight + "px";
+    particle.style.left = Math.random() * window.innerWidth + "px";
+    particle.style.opacity = "0.9";
+    particle.style.borderRadius = "50%";
+    particle.style.boxShadow = "0 0 10px white";
+    particle.style.zIndex = "9999";
+    particle.style.transition = "transform 1s ease-out, opacity 1s ease-out";
+
+    document.body.appendChild(particle);
+
+    setTimeout(() => {
+      particle.style.transform = "translateY(200px) rotate(720deg)";
+      particle.style.opacity = "0";
+    }, 10);
+
+    setTimeout(() => particle.remove(), 1200);
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
+}
+</script>
+
 <script>
 let demoBalance = 10000;
 let realBalance = 0;
+let currentUser = null;
 
-/* YOUR WHEEL HAS 14 SEGMENTS */
+/* wheel values – 14 segments */
 const values = [0,5,10,15,20,25,30,35,40,45,50,5,10,20];
 const sliceCount = values.length;
 const sliceAngle = 360 / sliceCount;
-
 let currentRotation = 0;
 
-function updateBalanceDisplay() {
-  const mode = document.getElementById("mode").value;
-  document.getElementById("balance").textContent =
-    mode === "demo" ? demoBalance : realBalance;
+/* FIRESTORE BALANCE HELPERS */
+async function getRealBalance() {
+  if (!currentUser) return 0;
+  const docRef = db.collection("users").doc(currentUser.uid);
+  const snap = await docRef.get();
+  if (!snap.exists) {
+    await docRef.set({ balance: 0 });
+    return 0;
+  }
+  return snap.data().balance || 0;
 }
 
-function spin() {
+async function setRealBalance(amount) {
+  if (!currentUser) return;
+  await db.collection("users").doc(currentUser.uid).set(
+    { balance: amount },
+    { merge: true }
+  );
+}
+
+/* AUTH STATE */
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+  currentUser = user;
+  realBalance = await getRealBalance();
+  updateBalanceDisplay();
+});
+
+/* UPDATE BALANCE DISPLAY */
+function updateBalanceDisplay() {
+  const mode = document.getElementById("mode").value;
+  const balSpan = document.getElementById("balance");
+  if (mode === "demo") {
+    balSpan.textContent = demoBalance;
+  } else {
+    balSpan.textContent = realBalance;
+  }
+}
+
+/* SPIN WHEEL */
+async function spin() {
   const mode = document.getElementById("mode").value;
   const result = document.getElementById("result");
 
-  let balance = mode === "demo" ? demoBalance : realBalance;
-
-  if (balance < 20) {
-    result.textContent = "You must deposit first!";
-    return;
+  if (mode === "demo") {
+    if (demoBalance < 20) {
+      result.textContent = "Not enough demo credits.";
+      return;
+    }
+    demoBalance -= 20;
+  } else {
+    realBalance = await getRealBalance();
+    if (realBalance < 20) {
+      result.textContent = "You must deposit first!";
+      return;
+    }
+    realBalance -= 20;
+    await setRealBalance(realBalance);
   }
-
-  if (mode === "demo") demoBalance -= 20;
-  else realBalance -= 20;
 
   updateBalanceDisplay();
   result.textContent = "🎡 Spinning...";
@@ -179,26 +297,32 @@ function spin() {
   currentRotation += rotation;
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-  setTimeout(() => {
+  setTimeout(async () => {
     let final = currentRotation % 360;
     if (final < 0) final += 360;
 
-    /* ARROW POINTS DOWN, SO WE USE THIS FORMULA */
-    let pointerAngle = (final + sliceAngle / 2) % 360;
-    let index = Math.floor(pointerAngle / sliceAngle);
+    // arrow points DOWN, so use this mapping
+    const pointerAngle = (final + sliceAngle / 2) % 360;
+    const index = Math.floor(pointerAngle / sliceAngle);
+    const win = values[index];
 
-    let win = values[index];
+    if (win > 0) {
+      result.textContent = "💎 You won: " + win + " credits!";
+      launchConfetti();
 
-    result.textContent = "💎 You won: " + win + " credits!";
-
-    if (mode === "demo") demoBalance += win;
-    else realBalance += win;
+      if (mode === "demo") {
+        demoBalance += win;
+      } else {
+        realBalance += win;
+        await setRealBalance(realBalance);
+      }
+    } else {
+      result.textContent = "No win, try again!";
+    }
 
     updateBalanceDisplay();
   }, 3100);
 }
-
-updateBalanceDisplay();
 </script>
 
 </body>

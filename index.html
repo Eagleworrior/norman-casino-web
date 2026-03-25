@@ -1,121 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Norman Casino - Main Menu</title>
+<title>Neon Casino Lobby</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
   body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: radial-gradient(circle at top, #ff00ff, #000020 60%, #000000);
+    background: radial-gradient(circle at center, #ff00ff, #000020 60%, #000000);
     color: white;
     text-align: center;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    animation: fadeIn 1s ease-out;
+    padding: 20px;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.97); }
-    to { opacity: 1; transform: scale(1); }
+  /* TOP BALANCE BAR */
+  #top-balance-bar {
+    width: 100%;
+    padding: 12px 0;
+    background: linear-gradient(90deg, #ff00ff, #00ffea);
+    color: #000010;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 0 20px #ff00ff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+  }
+
+  #top-balance-label {
+    color: #000010;
+    text-shadow: 0 0 10px #ffffff;
+  }
+
+  #top-balance-value {
+    color: #ffea00;
+    text-shadow: 0 0 10px #ffea00;
+  }
+
+  body {
+    padding-top: 80px;
   }
 
   h1 {
-    font-size: 34px;
-    margin-bottom: 20px;
-    text-shadow: 0 0 12px #ff00ff, 0 0 20px #00ffea;
+    font-size: 45px;
+    margin-top: 20px;
+    text-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffea;
+    font-weight: bold;
   }
 
   h1 span:nth-child(1) { color: #ffea00; }
   h1 span:nth-child(2) { color: #00ffea; }
   h1 span:nth-child(3) { color: #ff00ff; }
 
+  .menu {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .menu-btn {
-    width: 80%;
-    max-width: 320px;
-    padding: 15px;
-    margin: 12px auto;
-    font-size: 20px;
-    border-radius: 12px;
+    padding: 18px;
+    font-size: 24px;
+    border-radius: 14px;
     border: none;
     cursor: pointer;
     font-weight: bold;
-    background: linear-gradient(90deg, #ffea00, #ff00ff);
+    background: linear-gradient(90deg, #ff00ff, #00ffea);
     color: #000010;
-    text-shadow: 0 0 4px rgba(0,0,0,0.7);
-    box-shadow: 0 0 15px rgba(255,0,255,0.7), 0 0 25px rgba(0,255,255,0.4);
-    transition: 0.2s ease-in-out;
+    box-shadow: 0 0 25px #ff00ff;
+    transition: 0.2s;
   }
 
   .menu-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.15);
+    transform: scale(1.07);
+    filter: brightness(1.2);
   }
 
-  .logout {
-    margin-top: 25px;
-    font-size: 14px;
-    color: #ff5555;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-
-  .balance-box {
-    margin-bottom: 20px;
-    font-size: 18px;
-    color: #00ffea;
-    text-shadow: 0 0 8px #00ffea;
+  #logout-btn {
+    background: linear-gradient(90deg, #ff4444, #ff8800);
+    box-shadow: 0 0 25px #ff4444;
   }
 </style>
 </head>
 
 <body>
 
+<!-- UNIVERSAL BALANCE BAR -->
+<div id="top-balance-bar">
+  <span id="top-balance-label">BALANCE:</span>
+  <span id="top-balance-value">0</span>
+</div>
+
 <h1>
-  <span>NORMAN</span> <span>CASINO</span> <span>MENU</span>
+  <span>NEON</span> <span>CASINO</span> <span>LOBBY</span>
 </h1>
 
-<div class="balance-box" id="balanceBox">Loading balance...</div>
+<div class="menu">
+  <button class="menu-btn" onclick="location.href='slot.html'">🎰 Slot Machine</button>
+  <button class="menu-btn" onclick="location.href='wheel.html'">🎡 Wheel Spin</button>
+  <button class="menu-btn" onclick="location.href='deposit.html'">💰 Deposit</button>
+  <button class="menu-btn" onclick="location.href='withdraw.html'">💸 Withdraw</button>
+  <button class="menu-btn" onclick="location.href='login.html'">🔐 Login</button>
+  <button class="menu-btn" id="logout-btn" onclick="logout()">🚪 Logout</button>
+</div>
 
-<button class="menu-btn" onclick="location.href='deposit.html'">💰 Deposit Dashboard</button>
-<button class="menu-btn" onclick="location.href='withdraw.html'">🏧 Withdrawal Dashboard</button>
-<button class="menu-btn" onclick="location.href='wheel.html'">🎡 Spinning Wheel</button>
-<button class="menu-btn" onclick="location.href='slot.html'">🎰 Slot Machine</button>
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-<div class="logout" onclick="logoutUser()">Logout</div>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDsK3umDd8f2ujLAjIZkv10mtvFNkCs2fA",
+  authDomain: "norman-casino.firebaseapp.com",
+  projectId: "norman-casino",
+  storageBucket: "norman-casino.firebasestorage.app",
+  messagingSenderId: "727231313437",
+  appId: "1:727231313437:web:f0e60b94cf8f97cb30f8f4"
+};
 
-<script type="module">
-  import { getAuth, onAuthStateChanged } 
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
 
-  import { getFirestore, doc, getDoc }
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+let currentUser = null;
+let globalBalance = 0;
 
-  import { logoutUser } from "./scripts/auth.js";
+/* LOAD BALANCE */
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    document.getElementById("top-balance-value").textContent = "0";
+    return;
+  }
+  currentUser = user;
+  await loadGlobalBalance();
+});
 
-  const auth = getAuth();
-  const db = getFirestore();
+async function loadGlobalBalance() {
+  const docRef = db.collection("users").doc(currentUser.uid);
+  const snap = await docRef.get();
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
+  if (!snap.exists) {
+    await docRef.set({ balance: 0 });
+    globalBalance = 0;
+  } else {
+    globalBalance = snap.data().balance || 0;
+  }
 
-    const ref = doc(db, "users", user.uid);
-    const snap = await getDoc(ref);
+  document.getElementById("top-balance-value").textContent = globalBalance;
+}
 
-    if (snap.exists()) {
-      document.getElementById("balanceBox").textContent =
-        "💎 Balance: $" + snap.data().balance;
-    } else {
-      document.getElementById("balanceBox").textContent =
-        "Balance unavailable.";
-    }
-  });
+async function logout() {
+  await auth.signOut();
+  location.href = "login.html";
+}
 </script>
 
 </body>

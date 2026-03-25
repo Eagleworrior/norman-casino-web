@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Norman Casino - Deposit Instructions</title>
+<title>Neon Casino - Deposit</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -11,76 +11,76 @@
     background: radial-gradient(circle at top, #ff00ff, #000020 60%, #000000);
     color: white;
     text-align: center;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     padding: 20px;
-    animation: fadeIn 1s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.97); }
-    to { opacity: 1; transform: scale(1); }
   }
 
   h1 {
-    font-size: 36px;
-    margin-bottom: 15px;
-    text-shadow: 0 0 12px #ff00ff, 0 0 20px #00ffea;
+    font-size: 38px;
+    margin-top: 10px;
+    text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffea;
+    font-weight: bold;
   }
-
   h1 span:nth-child(1) { color: #ffea00; }
   h1 span:nth-child(2) { color: #00ffea; }
   h1 span:nth-child(3) { color: #ff00ff; }
 
-  .box {
-    background: rgba(0, 0, 0, 0.45);
-    border: 2px solid rgba(255, 255, 255, 0.25);
-    border-radius: 18px;
-    padding: 25px;
-    width: 90%;
-    max-width: 450px;
-    margin: 0 auto;
-    box-shadow: 0 0 25px rgba(255,0,255,0.5), 0 0 35px rgba(0,255,255,0.4);
-    animation: glow 2s infinite alternate;
-  }
-
-  @keyframes glow {
-    from { box-shadow: 0 0 20px #ff00ff; }
-    to { box-shadow: 0 0 30px #00ffea; }
-  }
-
-  .step {
-    font-size: 22px;
-    margin: 15px 0;
+  .balance-box {
+    margin-top: 15px;
+    font-size: 26px;
     font-weight: bold;
-    text-shadow: 0 0 10px #ff00ff;
-  }
-
-  .highlight {
     color: #ffea00;
-    font-size: 24px;
     text-shadow: 0 0 12px #ffea00;
   }
 
-  .back-btn {
-    margin-top: 30px;
-    padding: 12px 20px;
+  .card {
+    margin: 30px auto;
+    max-width: 400px;
+    background: #000010;
+    border-radius: 18px;
+    border: 3px solid #ff00ff;
+    box-shadow: 0 0 30px #ff00ff, 0 0 40px #00ffea;
+    padding: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
     font-size: 18px;
-    border-radius: 12px;
+    color: #00ffea;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    font-size: 20px;
+    border-radius: 14px;
     border: none;
     cursor: pointer;
     font-weight: bold;
-    background: linear-gradient(90deg, #00ffea, #ff00ff);
+    background: linear-gradient(90deg, #ff00ff, #00ffea);
     color: #000010;
-    box-shadow: 0 0 15px rgba(255,0,255,0.7);
-    transition: 0.2s;
+    box-shadow: 0 0 20px #ff00ff;
+    margin: 5px;
   }
 
-  .back-btn:hover {
+  .btn:hover {
     transform: scale(1.05);
     filter: brightness(1.15);
+  }
+
+  #message {
+    margin-top: 15px;
+    font-size: 18px;
+    text-shadow: 0 0 10px #ffea00;
   }
 </style>
 </head>
@@ -88,36 +88,97 @@
 <body>
 
 <h1>
-  <span>DEPOSIT</span> <span>WITH</span> <span>MPESA</span>
+  <span>NEON</span> <span>CASH</span> <span>DEPOSIT</span>
 </h1>
 
-<div class="box">
-
-  <div class="step">📱 Open your <span class="highlight">MPESA</span> Menu</div>
-
-  <div class="step">➡ Select <span class="highlight">Lipa na MPESA</span></div>
-
-  <div class="step">➡ Choose <span class="highlight">Paybill</span></div>
-
-  <div class="step">🏦 Paybill Number:<br>
-    <span class="highlight">880100</span>
-  </div>
-
-  <div class="step">🧾 Account Number:<br>
-    <span class="highlight">1004508555</span>
-  </div>
-
-  <div class="step">💵 Minimum Deposit:<br>
-    <span class="highlight">KSH 50</span>
-  </div>
-
-  <div class="step" style="color:#00ffea; text-shadow:0 0 12px #00ffea;">
-    ✔ Your balance updates automatically after payment
-  </div>
-
+<div class="balance-box">
+  Current Balance: <span id="balance">0</span>
 </div>
 
-<button class="back-btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
+<div class="card">
+  <label for="amount">Deposit amount</label>
+  <input type="number" id="amount" min="1" placeholder="Enter amount">
+
+  <button class="btn" onclick="quickDeposit(100)">+100</button>
+  <button class="btn" onclick="quickDeposit(500)">+500</button>
+  <button class="btn" onclick="quickDeposit(1000)">+1000</button>
+
+  <br><br>
+  <button class="btn" onclick="deposit()">Confirm Deposit</button>
+</div>
+
+<p id="message"></p>
+
+<button class="btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDsK3umDd8f2ujLAjIZkv10mtvFNkCs2fA",
+  authDomain: "norman-casino.firebaseapp.com",
+  projectId: "norman-casino",
+  storageBucket: "norman-casino.firebasestorage.app",
+  messagingSenderId: "727231313437",
+  appId: "1:727231313437:web:f0e60b94cf8f97cb30f8f4"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+let currentUser = null;
+let balance = 0;
+
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
+  currentUser = user;
+  await loadBalance();
+});
+
+async function loadBalance() {
+  const docRef = db.collection("users").doc(currentUser.uid);
+  const snap = await docRef.get();
+  if (!snap.exists) {
+    await docRef.set({ balance: 0 });
+    balance = 0;
+  } else {
+    balance = snap.data().balance || 0;
+  }
+  document.getElementById("balance").textContent = balance;
+}
+
+function quickDeposit(amount) {
+  const input = document.getElementById("amount");
+  input.value = (Number(input.value) || 0) + amount;
+}
+
+async function deposit() {
+  const msg = document.getElementById("message");
+  const input = document.getElementById("amount");
+  const amount = Number(input.value);
+
+  if (!amount || amount <= 0) {
+    msg.textContent = "Enter a valid amount.";
+    return;
+  }
+
+  balance += amount;
+  await db.collection("users").doc(currentUser.uid).set(
+    { balance: balance },
+    { merge: true }
+  );
+
+  document.getElementById("balance").textContent = balance;
+  msg.textContent = "✅ Deposit successful!";
+  input.value = "";
+}
+</script>
 
 </body>
 </html>

@@ -79,7 +79,6 @@
     position: absolute;
     width: 100%;
     top: 0;
-    transition: top 0.15s linear; /* SUPER FAST */
   }
 
   .fruit {
@@ -148,7 +147,7 @@
 </select>
 
 <div class="balance-box">
-  Balance: <span id="balance">10000</span>
+  Balance: <span id="balance">0</span>
 </div>
 
 <div id="slot-frame">
@@ -163,18 +162,78 @@
 
 <button class="back-btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
 
+<!-- FIREBASE SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+// TODO: replace with your real Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "norman-casino.firebaseapp.com",
+  projectId: "norman-casino",
+  storageBucket: "norman-casino.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+</script>
+
+<!-- CONFETTI -->
+<script>
+function launchConfetti() {
+  const duration = 1500;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    const colors = ["#ff00ff", "#00ffea", "#ffea00", "#ffffff"];
+    const particle = document.createElement("div");
+
+    particle.style.position = "fixed";
+    particle.style.width = "10px";
+    particle.style.height = "10px";
+    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.top = Math.random() * window.innerHeight + "px";
+    particle.style.left = Math.random() * window.innerWidth + "px";
+    particle.style.opacity = "0.9";
+    particle.style.borderRadius = "50%";
+    particle.style.boxShadow = "0 0 10px white";
+    particle.style.zIndex = "9999";
+    particle.style.transition = "transform 1s ease-out, opacity 1s ease-out";
+
+    document.body.appendChild(particle);
+
+    setTimeout(() => {
+      particle.style.transform = "translateY(200px) rotate(720deg)";
+      particle.style.opacity = "0";
+    }, 10);
+
+    setTimeout(() => particle.remove(), 1200);
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
+}
+</script>
+
 <script>
 let demoBalance = 10000;
-let realBalance = 0;
+let realBalance = 0;   // from Firebase
+let currentUser = null;
 
 /* 100+ FRUITS & SYMBOLS */
 const fruits = [];
-const base = ["🍒","🍋","🍉","⭐","💎","7️⃣","🍇","🍍","🥝","🍊","🍓","🔔","🍈","🥥","🍏","🍐","🍑","🍭","🍬","🎲","🎯","🧨","🎁","🪙"];
-
-for (let i = 0; i < 5; i++) {
-  fruits.push(...base); // duplicate 5 times = 120+ symbols
+const base = ["🍒","🍋","🍉","⭐","💎","7️⃣","🍇","🍍","🥝","🍊","🍓","🔔","🍈","🥥","🍏","🍐","🍑"];
+for (let i = 0; i < 7; i++) {
+  fruits.push(...base);
 }
 
+/* LOAD REELS */
 function loadReels() {
   for (let i = 1; i <= 3; i++) {
     let strip = document.getElementById("strip" + i);
@@ -186,62 +245,128 @@ function loadReels() {
 }
 loadReels();
 
-function updateBalanceDisplay() {
-  let mode = document.getElementById("mode").value;
-  document.getElementById("balance").textContent =
-    mode === "demo" ? demoBalance : realBalance;
+/* FIRESTORE BALANCE HELPERS */
+async function getRealBalance() {
+  if (!currentUser) return 0;
+  const docRef = db.collection("users").doc(currentUser.uid);
+  const snap = await docRef.get();
+  if (!snap.exists) {
+    await docRef.set({ balance: 0 });
+    return 0;
+  }
+  return snap.data().balance || 0;
 }
 
-function spin() {
-  let mode = document.getElementById("mode").value;
-  let result = document.getElementById("result");
+async function setRealBalance(amount) {
+  if (!currentUser) return;
+  await db.collection("users").doc(currentUser.uid).set(
+    { balance: amount },
+    { merge: true }
+  );
+}
 
-  let balance = mode === "demo" ? demoBalance : realBalance;
-
-  if (balance < 20) {
-    if (mode === "real") {
-      result.textContent = "You must deposit first!";
-      setTimeout(() => location.href = "deposit.html", 1000);
-    } else {
-      result.textContent = "Not enough demo credits.";
-    }
+/* AUTH STATE */
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    // redirect to login if not logged in
+    window.location.href = "login.html";
     return;
   }
-
-  if (mode === "demo") demoBalance -= 20;
-  else realBalance -= 20;
-
+  currentUser = user;
+  realBalance = await getRealBalance();
   updateBalanceDisplay();
-  result.textContent = "⚡ Spinning at light speed...";
+});
 
-  let pos1 = Math.floor(Math.random() * fruits.length);
-  let pos2 = Math.floor(Math.random() * fruits.length);
-  let pos3 = Math.floor(Math.random() * fruits.length);
-
-  document.getElementById("strip1").style.top = -(pos1 * 80) + "px";
-  document.getElementById("strip2").style.top = -(pos2 * 80) + "px";
-  document.getElementById("strip3").style.top = -(pos3 * 80) + "px";
-
-  setTimeout(() => {
-    let f1 = fruits[pos1];
-    let f2 = fruits[pos2];
-    let f3 = fruits[pos3];
-
-    if (f1 === f2 && f2 === f3) {
-      let winAmount = 500;
-      result.textContent = "💥 MEGA WIN! You win: " + winAmount + " 💥";
-
-      if (mode === "demo") demoBalance += winAmount;
-      else realBalance += winAmount;
-    } else {
-      result.textContent = "Try again!";
-    }
-
-    updateBalanceDisplay();
-  }, 150);
+/* UPDATE BALANCE DISPLAY */
+function updateBalanceDisplay() {
+  const mode = document.getElementById("mode").value;
+  const balSpan = document.getElementById("balance");
+  if (mode === "demo") {
+    balSpan.textContent = demoBalance;
+  } else {
+    balSpan.textContent = realBalance;
+  }
 }
 
-updateBalanceDisplay();
+/* SUPER FAST SPINNING SLOT MACHINE */
+async function spin() {
+  const mode = document.getElementById("mode").value;
+  const result = document.getElementById("result");
+
+  if (mode === "demo") {
+    if (demoBalance < 20) {
+      result.textContent = "Not enough demo credits.";
+      return;
+    }
+    demoBalance -= 20;
+  } else {
+    // REAL MODE
+    realBalance = await getRealBalance();
+    if (realBalance < 20) {
+      result.textContent = "You must deposit first!";
+      return;
+    }
+    realBalance -= 20;
+    await setRealBalance(realBalance);
+  }
+
+  updateBalanceDisplay();
+  result.textContent = "⚡ Spinning at high speed...";
+
+  const strips = [
+    document.getElementById("strip1"),
+    document.getElementById("strip2"),
+    document.getElementById("strip3")
+  ];
+
+  strips.forEach(strip => strip.style.transition = "none");
+
+  const spinIntervals = [];
+
+  strips.forEach((strip, index) => {
+    spinIntervals[index] = setInterval(() => {
+      const rand = Math.floor(Math.random() * fruits.length);
+      strip.style.top = -(rand * 80) + "px";
+    }, 30);
+  });
+
+  setTimeout(async () => {
+    strips.forEach((strip, index) => clearInterval(spinIntervals[index]));
+    strips.forEach(strip => strip.style.transition = "top 0.25s ease-out");
+
+    const pos1 = Math.floor(Math.random() * fruits.length);
+    const pos2 = Math.floor(Math.random() * fruits.length);
+    const pos3 = Math.floor(Math.random() * fruits.length);
+
+    strip1.style.top = -(pos1 * 80) + "px";
+    strip2.style.top = -(pos2 * 80) + "px";
+    strip3.style.top = -(pos3 * 80) + "px";
+
+    setTimeout(async () => {
+      const f1 = fruits[pos1];
+      const f2 = fruits[pos2];
+      const f3 = fruits[pos3];
+
+      if (f1 === f2 && f2 === f3) {
+        const winAmount = 500;
+        result.textContent = "💥 MEGA WIN! You win: " + winAmount + " 💥";
+        launchConfetti();
+
+        if (mode === "demo") {
+          demoBalance += winAmount;
+        } else {
+          realBalance += winAmount;
+          await setRealBalance(realBalance);
+        }
+      } else {
+        result.textContent = "Try again!";
+      }
+
+      updateBalanceDisplay();
+    }, 250);
+
+  }, 1200);
+}
 </script>
 
 </body>
