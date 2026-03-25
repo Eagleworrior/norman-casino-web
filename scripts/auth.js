@@ -1,9 +1,8 @@
 // -------------------------------------------
-// NORMAN CASINO AUTH SYSTEM (FULL VERSION)
-// Neon, high-graphic, Firebase Authentication
+// NORMAN CASINO AUTH SYSTEM (FINAL VERSION)
 // -------------------------------------------
 
-// Firebase imports (MODULE VERSION)
+// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 import { 
@@ -23,7 +22,7 @@ import {
 
 
 // -------------------------------------------
-// YOUR FIREBASE CONFIG (Corrected bucket)
+// FIREBASE CONFIG (Corrected)
 // -------------------------------------------
 const firebaseConfig = {
   apiKey: "AIzaSyDsK3umDd8f2ujLAjIZkv10mtvFNkCs2fA",
@@ -42,31 +41,25 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-console.log("%c🔥 Norman Casino Auth Loaded", "color:#ff00ff; font-size:16px;");
-
 
 // -------------------------------------------
 // SIGNUP FUNCTION
 // -------------------------------------------
 export async function handleSignup(email, password, messageBox) {
   try {
-    // Create user in Firebase Auth
     const userCred = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCred.user;
 
-    // Create Firestore profile
     await setDoc(doc(db, "users", user.uid), {
       email: email,
-      balance: 1000, // starting balance
+      balance: 1000,
       created: new Date().toISOString()
     });
 
-    // Success message
     messageBox.style.display = "block";
     messageBox.className = "success";
     messageBox.textContent = "Account created! Redirecting...";
 
-    // Redirect to main menu
     setTimeout(() => {
       window.location.href = "index.html";
     }, 1200);
@@ -85,11 +78,10 @@ export async function handleSignup(email, password, messageBox) {
 export async function handleLogin(email, password, messageBox) {
   try {
     const userCred = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCred.user;
 
     messageBox.style.display = "block";
     messageBox.className = "success";
-    messageBox.textContent = "Login successful! Loading your balance...";
+    messageBox.textContent = "Login successful! Redirecting...";
 
     setTimeout(() => {
       window.location.href = "index.html";
@@ -101,18 +93,6 @@ export async function handleLogin(email, password, messageBox) {
     messageBox.textContent = error.message;
   }
 }
-
-
-// -------------------------------------------
-// AUTO SESSION CHECK
-// -------------------------------------------
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    console.log("%c✔ User logged in:", "color:#00ffea;", user.email);
-  } else {
-    console.log("%c✖ No user logged in", "color:#ff5555;");
-  }
-});
 
 
 // -------------------------------------------
