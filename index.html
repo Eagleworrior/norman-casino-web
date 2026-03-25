@@ -8,10 +8,10 @@
   body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: radial-gradient(circle at center, #ff00ff, #000020 60%, #000000);
+    background: radial-gradient(circle at center, #12001f, #000000 70%);
     color: white;
     text-align: center;
-    padding: 20px;
+    overflow-x: hidden;
   }
 
   /* TOP BALANCE BAR */
@@ -45,7 +45,7 @@
   }
 
   h1 {
-    font-size: 45px;
+    font-size: 46px;
     margin-top: 20px;
     text-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffea;
     font-weight: bold;
@@ -55,19 +55,33 @@
   h1 span:nth-child(2) { color: #00ffea; }
   h1 span:nth-child(3) { color: #ff00ff; }
 
+  #vip-level {
+    margin-top: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffea00;
+    text-shadow: 0 0 12px #ffea00;
+  }
+
+  .layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 25px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+
   .menu {
-    margin-top: 40px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    max-width: 350px;
-    margin-left: auto;
-    margin-right: auto;
+    gap: 15px;
+    max-width: 320px;
   }
 
   .menu-btn {
-    padding: 18px;
-    font-size: 24px;
+    padding: 16px;
+    font-size: 22px;
     border-radius: 14px;
     border: none;
     cursor: pointer;
@@ -87,10 +101,147 @@
     background: linear-gradient(90deg, #ff4444, #ff8800);
     box-shadow: 0 0 25px #ff4444;
   }
+
+  /* CENTER MONEY + PARTICLES */
+  #center-area {
+    position: relative;
+    width: 260px;
+    height: 260px;
+  }
+
+  #money-orb {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160px;
+    height: 160px;
+    margin-left: -80px;
+    margin-top: -80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #00ff88, #004422);
+    box-shadow: 0 0 30px #00ff88, 0 0 50px #00ffea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    text-shadow: 0 0 15px #ffffff;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 30px #00ff88; }
+    50% { transform: scale(1.08); box-shadow: 0 0 60px #00ffea; }
+    100% { transform: scale(1); box-shadow: 0 0 30px #00ff88; }
+  }
+
+  .particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffea00;
+    box-shadow: 0 0 10px #ffea00;
+    animation: floatUp 6s linear infinite;
+    opacity: 0.8;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(1); opacity: 0.9; }
+    100% { transform: translateY(-260px) scale(0.5); opacity: 0; }
+  }
+
+  /* FLAMES */
+  #left-flame, #right-flame {
+    position: fixed;
+    bottom: 0;
+    width: 120px;
+    height: 220px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  #left-flame {
+    left: 0;
+    background: radial-gradient(circle at top, #00ff00, transparent 60%);
+    filter: blur(4px) drop-shadow(0 0 25px #00ff00);
+    animation: flameLeft 1.8s infinite ease-in-out;
+  }
+
+  #right-flame {
+    right: 0;
+    background: radial-gradient(circle at top, #b000ff, transparent 60%);
+    filter: blur(4px) drop-shadow(0 0 25px #b000ff);
+    animation: flameRight 1.8s infinite ease-in-out;
+  }
+
+  @keyframes flameLeft {
+    0%,100% { transform: translateY(0) scaleY(1); opacity: 0.8; }
+    50% { transform: translateY(-20px) scaleY(1.2); opacity: 1; }
+  }
+
+  @keyframes flameRight {
+    0%,100% { transform: translateY(0) scaleY(1); opacity: 0.8; }
+    50% { transform: translateY(-25px) scaleY(1.25); opacity: 1; }
+  }
+
+  /* HISTORY PANEL */
+  #history-card {
+    max-width: 320px;
+    background: #050015;
+    border-radius: 18px;
+    border: 2px solid #00ffea;
+    box-shadow: 0 0 25px #00ffea;
+    padding: 15px;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  #history-card h2 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #ffea00;
+    text-shadow: 0 0 10px #ffea00;
+    text-align: center;
+  }
+
+  #history-list {
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .history-item {
+    margin-bottom: 6px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 4px;
+  }
+
+  .history-type {
+    font-weight: bold;
+  }
+
+  .history-amount {
+    color: #00ff88;
+  }
+
+  .history-time {
+    color: #888;
+    font-size: 12px;
+  }
+
+  @media (max-width: 800px) {
+    .layout {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
 </style>
 </head>
 
 <body>
+
+<!-- FLAMES -->
+<div id="left-flame"></div>
+<div id="right-flame"></div>
 
 <!-- UNIVERSAL BALANCE BAR -->
 <div id="top-balance-bar">
@@ -101,14 +252,31 @@
 <h1>
   <span>NEON</span> <span>CASINO</span> <span>LOBBY</span>
 </h1>
+<div id="vip-level">VIP: Bronze</div>
 
-<div class="menu">
-  <button class="menu-btn" onclick="location.href='slot.html'">🎰 Slot Machine</button>
-  <button class="menu-btn" onclick="location.href='wheel.html'">🎡 Wheel Spin</button>
-  <button class="menu-btn" onclick="location.href='deposit.html'">💰 Deposit</button>
-  <button class="menu-btn" onclick="location.href='withdraw.html'">💸 Withdraw</button>
-  <button class="menu-btn" onclick="location.href='login.html'">🔐 Login</button>
-  <button class="menu-btn" id="logout-btn" onclick="logout()">🚪 Logout</button>
+<div class="layout">
+  <!-- LEFT: MENU -->
+  <div class="menu">
+    <button class="menu-btn" onclick="goPage('slot.html')">🎰 Slot Machine</button>
+    <button class="menu-btn" onclick="goPage('wheel.html')">🎡 Wheel Spin</button>
+    <button class="menu-btn" onclick="goPage('deposit.html')">💰 Deposit</button>
+    <button class="menu-btn" onclick="goPage('withdraw.html')">💸 Withdraw</button>
+    <button class="menu-btn" id="login-btn" onclick="goPage('login.html')">🔐 Login</button>
+    <button class="menu-btn" id="logout-btn" onclick="logout()" style="display:none;">🚪 Logout</button>
+  </div>
+
+  <!-- CENTER: MONEY + PARTICLES -->
+  <div id="center-area">
+    <div id="money-orb">💵</div>
+  </div>
+
+  <!-- RIGHT: HISTORY -->
+  <div id="history-card">
+    <h2>Transaction History</h2>
+    <div id="history-list">
+      <div class="history-item">Loading...</div>
+    </div>
+  </div>
 </div>
 
 <!-- FIREBASE SDK -->
@@ -133,14 +301,64 @@ const db   = firebase.firestore();
 let currentUser = null;
 let globalBalance = 0;
 
-/* LOAD BALANCE */
-auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-    document.getElementById("top-balance-value").textContent = "0";
-    return;
+/* SIMPLE SOUNDS */
+const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+const winSound   = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+
+/* PARTICLES AROUND MONEY */
+function spawnParticles() {
+  const center = document.getElementById("center-area");
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement("div");
+    p.className = "particle";
+    p.style.left = (Math.random() * 220 + 20) + "px";
+    p.style.top  = (Math.random() * 220 + 20) + "px";
+    p.style.animationDelay = (Math.random() * 4) + "s";
+    center.appendChild(p);
   }
-  currentUser = user;
-  await loadGlobalBalance();
+}
+spawnParticles();
+
+/* VIP LEVEL BASED ON BALANCE */
+function updateVipLevel() {
+  const vipEl = document.getElementById("vip-level");
+  let level = "Bronze";
+  let color = "#cd7f32";
+
+  if (globalBalance >= 10000) {
+    level = "Diamond";
+    color = "#00fff7";
+  } else if (globalBalance >= 5000) {
+    level = "Platinum";
+    color = "#e5e4e2";
+  } else if (globalBalance >= 2000) {
+    level = "Gold";
+    color = "#ffd700";
+  } else if (globalBalance >= 500) {
+    level = "Silver";
+    color = "#c0c0c0";
+  }
+
+  vipEl.textContent = "VIP: " + level;
+  vipEl.style.color = color;
+  vipEl.style.textShadow = "0 0 15px " + color;
+}
+
+/* LOAD BALANCE + HISTORY */
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById("login-btn").style.display = "none";
+    document.getElementById("logout-btn").style.display = "block";
+    await loadGlobalBalance();
+    await loadHistory();
+  } else {
+    document.getElementById("login-btn").style.display = "block";
+    document.getElementById("logout-btn").style.display = "none";
+    document.getElementById("top-balance-value").textContent = "0";
+    document.getElementById("history-list").innerHTML =
+      "<div class='history-item'>Login to see your history.</div>";
+  }
 });
 
 async function loadGlobalBalance() {
@@ -155,9 +373,66 @@ async function loadGlobalBalance() {
   }
 
   document.getElementById("top-balance-value").textContent = globalBalance;
+  updateVipLevel();
 }
 
+/* TRANSACTION HISTORY: reads last 20 from users/{uid}/transactions */
+async function loadHistory() {
+  const list = document.getElementById("history-list");
+  list.innerHTML = "<div class='history-item'>Loading...</div>";
+
+  const colRef = db.collection("users")
+                   .doc(currentUser.uid)
+                   .collection("transactions")
+                   .orderBy("time", "desc")
+                   .limit(20);
+
+  const snap = await colRef.get();
+
+  if (snap.empty) {
+    list.innerHTML = "<div class='history-item'>No transactions yet.</div>";
+    return;
+  }
+
+  list.innerHTML = "";
+  snap.forEach(doc => {
+    const data = doc.data();
+    const div = document.createElement("div");
+    div.className = "history-item";
+
+    const type = document.createElement("div");
+    type.className = "history-type";
+    type.textContent = data.type || "Unknown";
+
+    const amount = document.createElement("div");
+    amount.className = "history-amount";
+    amount.textContent = (data.amount >= 0 ? "+" : "") + data.amount;
+
+    const time = document.createElement("div");
+    time.className = "history-time";
+    const d = data.time ? data.time.toDate() : new Date();
+    time.textContent = d.toLocaleString();
+
+    div.appendChild(type);
+    div.appendChild(amount);
+    div.appendChild(time);
+    list.appendChild(div);
+  });
+}
+
+/* NAVIGATION WITH SOUND */
+function goPage(url) {
+  clickSound.currentTime = 0;
+  clickSound.play();
+  setTimeout(() => {
+    location.href = url;
+  }, 120);
+}
+
+/* LOGOUT */
 async function logout() {
+  clickSound.currentTime = 0;
+  clickSound.play();
   await auth.signOut();
   location.href = "login.html";
 }
