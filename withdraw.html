@@ -1,36 +1,153 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Withdraw</title>
+<title>Norman Casino - Withdraw</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body { background:black; color:white; text-align:center; font-family:Arial; }
-button { padding:15px; margin:10px; font-size:20px; border-radius:10px; }
-input { padding:10px; font-size:18px; }
-.panel { background:#111; padding:20px; margin:20px auto; width:350px; border-radius:10px; }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at bottom, #00ffea, #000020 60%, #000000);
+    color: white;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 1s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  h1 {
+    font-size: 36px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 12px #00ffea, 0 0 20px #ff00ff;
+  }
+
+  h1 span:nth-child(1) { color: #ffea00; }
+  h1 span:nth-child(2) { color: #00ffea; }
+  h1 span:nth-child(3) { color: #ff00ff; }
+
+  .box {
+    background: rgba(0, 0, 0, 0.45);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 18px;
+    padding: 25px;
+    width: 90%;
+    max-width: 450px;
+    margin: 0 auto;
+    box-shadow: 0 0 25px rgba(0,255,255,0.4), 0 0 35px rgba(255,0,255,0.3);
+    animation: glow 2s infinite alternate;
+  }
+
+  @keyframes glow {
+    from { box-shadow: 0 0 20px #00ffea; }
+    to { box-shadow: 0 0 30px #ff00ff; }
+  }
+
+  .label {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #ffea00;
+    text-shadow: 0 0 10px #ffea00;
+  }
+
+  input {
+    width: 80%;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    margin-bottom: 15px;
+    background: #000010;
+    color: #00ffea;
+    box-shadow: 0 0 10px rgba(0,255,255,0.4);
+  }
+
+  .btn {
+    padding: 12px 20px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: linear-gradient(90deg, #ff00ff, #00ffea);
+    color: #000010;
+    box-shadow: 0 0 15px rgba(255,0,255,0.7);
+    transition: 0.2s;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.15);
+  }
+
+  #msg {
+    margin-top: 15px;
+    font-size: 18px;
+    color: #ffea00;
+    text-shadow: 0 0 10px #ffea00;
+  }
+
+  .back-btn {
+    margin-top: 30px;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00ffea, #ff00ff);
+    color: #000010;
+    box-shadow: 0 0 15px rgba(255,0,255,0.7);
+    transition: 0.2s;
+  }
+
+  .back-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.15);
+  }
 </style>
 </head>
+
 <body>
 
-<h1>Withdrawal Dashboard</h1>
+<h1>
+  <span>WITHDRAW</span> <span>YOUR</span> <span>WINNINGS</span>
+</h1>
 
-<div class="panel">
-  <p>Minimum withdrawal: 500 credits</p>
+<div class="box">
 
-  <input id="amount" type="number" placeholder="Amount"><br><br>
-  <button onclick="withdraw()">Withdraw</button>
-  <p id="msg"></p>
+  <div class="label">Minimum Withdrawal: 500 Credits</div>
+
+  <input id="amount" type="number" placeholder="Enter amount">
+
+  <button class="btn" onclick="withdraw()">Withdraw</button>
+
+  <div id="msg"></div>
+
 </div>
 
-<button onclick="location.href='index.html'">⬅ Back to Main</button>
+<button class="back-btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
 
 <script>
 function withdraw() {
   let amt = parseInt(document.getElementById("amount").value);
-  if (amt < 500) {
+  let msg = document.getElementById("msg");
+
+  if (!amt || amt < 500) {
     msg.textContent = "Minimum withdrawal is 500 credits.";
     return;
   }
-  msg.textContent = "Withdrawal processed (virtual only).";
+
+  msg.textContent = "Your withdrawal request has been received.";
 }
 </script>
 
