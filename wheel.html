@@ -12,12 +12,6 @@
     color: white;
     text-align: center;
     padding: 20px;
-    animation: fadeIn 1s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.97); }
-    to { opacity: 1; transform: scale(1); }
   }
 
   h1 {
@@ -26,7 +20,6 @@
     text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffea;
     font-weight: bold;
   }
-
   h1 span:nth-child(1) { color: #ffea00; }
   h1 span:nth-child(2) { color: #00ffea; }
   h1 span:nth-child(3) { color: #ff00ff; }
@@ -50,27 +43,19 @@
     text-shadow: 0 0 12px #ffea00;
   }
 
-  /* ARROW */
+  /* DOWNWARD ARROW */
   #arrow {
     width: 0;
     height: 0;
     border-left: 35px solid transparent;
     border-right: 35px solid transparent;
-    border-bottom: 60px solid #ffea00; /* POINTS DOWN */
+    border-top: 60px solid #ffea00; /* POINTS DOWN */
     margin: 0 auto;
-    margin-bottom: -20px;
+    margin-bottom: -10px;
     filter: drop-shadow(0 0 10px #ffea00)
             drop-shadow(0 0 20px #ff00ff);
-    animation: arrowGlow 1.5s infinite ease-in-out;
   }
 
-  @keyframes arrowGlow {
-    0% { filter: drop-shadow(0 0 10px #ffea00); }
-    50% { filter: drop-shadow(0 0 25px #ff00ff); }
-    100% { filter: drop-shadow(0 0 10px #ffea00); }
-  }
-
-  /* WHEEL */
   #wheel-container {
     position: relative;
     width: 420px;
@@ -99,12 +84,6 @@
     background: linear-gradient(90deg, #ff00ff, #00ffea);
     color: #000010;
     box-shadow: 0 0 20px #ff00ff;
-    transition: 0.2s;
-  }
-
-  .spin-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.2);
   }
 
   #result {
@@ -125,12 +104,6 @@
     background: linear-gradient(90deg, #00ffea, #ff00ff);
     color: #000010;
     box-shadow: 0 0 15px #ff00ff;
-    transition: 0.2s;
-  }
-
-  .back-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.15);
   }
 </style>
 </head>
@@ -150,6 +123,7 @@
   Balance: <span id="balance">10000</span>
 </div>
 
+<!-- ARROW POINTING DOWN -->
 <div id="arrow"></div>
 
 <div id="wheel-container">
@@ -209,7 +183,8 @@ function spin() {
     let final = currentRotation % 360;
     if (final < 0) final += 360;
 
-    let pointerAngle = (360 - final + 180) % 360;
+    /* ARROW POINTS DOWN, SO WE USE THIS FORMULA */
+    let pointerAngle = (final + sliceAngle / 2) % 360;
     let index = Math.floor(pointerAngle / sliceAngle);
 
     let win = values[index];
