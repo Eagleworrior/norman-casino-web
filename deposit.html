@@ -1,40 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Deposit</title>
+<title>Norman Casino - Deposit Instructions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body { background:black; color:white; text-align:center; font-family:Arial; }
-button { padding:15px; margin:10px; font-size:20px; border-radius:10px; }
-input { padding:10px; font-size:18px; }
-.panel { background:#111; padding:20px; margin:20px auto; width:350px; border-radius:10px; }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #ff00ff, #000020 60%, #000000);
+    color: white;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 1s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  h1 {
+    font-size: 36px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 12px #ff00ff, 0 0 20px #00ffea;
+  }
+
+  h1 span:nth-child(1) { color: #ffea00; }
+  h1 span:nth-child(2) { color: #00ffea; }
+  h1 span:nth-child(3) { color: #ff00ff; }
+
+  .box {
+    background: rgba(0, 0, 0, 0.45);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 18px;
+    padding: 25px;
+    width: 90%;
+    max-width: 450px;
+    margin: 0 auto;
+    box-shadow: 0 0 25px rgba(255,0,255,0.5), 0 0 35px rgba(0,255,255,0.4);
+    animation: glow 2s infinite alternate;
+  }
+
+  @keyframes glow {
+    from { box-shadow: 0 0 20px #ff00ff; }
+    to { box-shadow: 0 0 30px #00ffea; }
+  }
+
+  .step {
+    font-size: 22px;
+    margin: 15px 0;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ff00ff;
+  }
+
+  .highlight {
+    color: #ffea00;
+    font-size: 24px;
+    text-shadow: 0 0 12px #ffea00;
+  }
+
+  .back-btn {
+    margin-top: 30px;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00ffea, #ff00ff);
+    color: #000010;
+    box-shadow: 0 0 15px rgba(255,0,255,0.7);
+    transition: 0.2s;
+  }
+
+  .back-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.15);
+  }
 </style>
 </head>
+
 <body>
 
-<h1>Deposit Dashboard</h1>
+<h1>
+  <span>DEPOSIT</span> <span>WITH</span> <span>MPESA</span>
+</h1>
 
-<div class="panel">
-  <p><b>Paybill:</b> 880100</p>
-  <p><b>Account Number:</b> 1004508555</p>
-  <p>Minimum deposit: 50 credits</p>
+<div class="box">
 
-  <input id="amount" type="number" placeholder="Amount"><br><br>
-  <button onclick="deposit()">Deposit</button>
-  <p id="msg"></p>
+  <div class="step">📱 Open your <span class="highlight">MPESA</span> Menu</div>
+
+  <div class="step">➡ Select <span class="highlight">Lipa na MPESA</span></div>
+
+  <div class="step">➡ Choose <span class="highlight">Paybill</span></div>
+
+  <div class="step">🏦 Paybill Number:<br>
+    <span class="highlight">880100</span>
+  </div>
+
+  <div class="step">🧾 Account Number:<br>
+    <span class="highlight">1004508555</span>
+  </div>
+
+  <div class="step">💵 Minimum Deposit:<br>
+    <span class="highlight">KSH 50</span>
+  </div>
+
+  <div class="step" style="color:#00ffea; text-shadow:0 0 12px #00ffea;">
+    ✔ Your balance updates automatically after payment
+  </div>
+
 </div>
 
-<button onclick="location.href='index.html'">⬅ Back to Main</button>
-
-<script>
-function deposit() {
-  let amt = parseInt(document.getElementById("amount").value);
-  if (amt < 50) {
-    msg.textContent = "Minimum deposit is 50 credits.";
-    return;
-  }
-  msg.textContent = "Deposit successful (virtual credits only).";
-}
-</script>
+<button class="back-btn" onclick="location.href='index.html'">⬅ Back to Menu</button>
 
 </body>
 </html>
