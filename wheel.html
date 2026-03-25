@@ -50,33 +50,13 @@
     text-shadow: 0 0 12px #ffea00;
   }
 
-  /* WHEEL CONTAINER */
-  #wheel-container {
-    position: relative;
-    width: 420px;
-    height: 420px;
-    margin: 30px auto;
-  }
-
-  /* WHEEL IMAGE */
-  #wheel {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background-image: url("https://i.imgur.com/2yQ2YQw.png"); /* High graphic wheel */
-    background-size: cover;
-    background-position: center;
-    transition: transform 3s cubic-bezier(.1,.8,.2,1.1);
-    box-shadow: 0 0 35px #ff00ff, 0 0 45px #00ffea;
-  }
-
-  /* REAL ARROW */
+  /* ARROW */
   #arrow {
     width: 0;
     height: 0;
     border-left: 35px solid transparent;
     border-right: 35px solid transparent;
-    border-bottom: 60px solid #ffea00;
+    border-bottom: 60px solid #ffea00; /* POINTS DOWN */
     margin: 0 auto;
     margin-bottom: -20px;
     filter: drop-shadow(0 0 10px #ffea00)
@@ -90,7 +70,25 @@
     100% { filter: drop-shadow(0 0 10px #ffea00); }
   }
 
-  /* SPIN BUTTON */
+  /* WHEEL */
+  #wheel-container {
+    position: relative;
+    width: 420px;
+    height: 420px;
+    margin: 30px auto;
+  }
+
+  #wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-image: url("https://copilot.microsoft.com/th/id/BCO.c08645b9-c697-48be-a151-2ccb22b5047a.png");
+    background-size: cover;
+    background-position: center;
+    transition: transform 3s cubic-bezier(.1,.8,.2,1.1);
+    box-shadow: 0 0 35px #ff00ff, 0 0 45px #00ffea;
+  }
+
   .spin-btn {
     padding: 15px 25px;
     font-size: 24px;
@@ -168,8 +166,11 @@
 let demoBalance = 10000;
 let realBalance = 0;
 
-const sliceCount = 37;
+/* YOUR WHEEL HAS 14 SEGMENTS */
+const values = [0,5,10,15,20,25,30,35,40,45,50,5,10,20];
+const sliceCount = values.length;
 const sliceAngle = 360 / sliceCount;
+
 let currentRotation = 0;
 
 function updateBalanceDisplay() {
@@ -185,12 +186,7 @@ function spin() {
   let balance = mode === "demo" ? demoBalance : realBalance;
 
   if (balance < 20) {
-    if (mode === "real") {
-      result.textContent = "You must deposit first!";
-      setTimeout(() => location.href = "deposit.html", 1000);
-    } else {
-      result.textContent = "Not enough demo credits.";
-    }
+    result.textContent = "You must deposit first!";
     return;
   }
 
@@ -216,12 +212,12 @@ function spin() {
     let pointerAngle = (360 - final + 180) % 360;
     let index = Math.floor(pointerAngle / sliceAngle);
 
-    let winningNumber = index;
+    let win = values[index];
 
-    result.textContent = "💎 You won: " + winningNumber + " credits!";
+    result.textContent = "💎 You won: " + win + " credits!";
 
-    if (mode === "demo") demoBalance += winningNumber;
-    else realBalance += winningNumber;
+    if (mode === "demo") demoBalance += win;
+    else realBalance += win;
 
     updateBalanceDisplay();
   }, 3100);
