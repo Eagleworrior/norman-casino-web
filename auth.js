@@ -24,7 +24,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Signup function
+// Signup function with auto-login fallback
 export async function signup(email, password) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -44,6 +44,7 @@ export async function signup(email, password) {
     return user;
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
+      // If email is already registered, log them in instead
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential.user;
     } else {
