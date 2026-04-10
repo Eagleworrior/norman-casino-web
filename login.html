@@ -156,21 +156,35 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { login } from "./auth.js";
+
     const loginForm = document.getElementById('loginForm');
     const message = document.getElementById('message');
 
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
 
-      handleLogin(email, password, message);
+      try {
+        const user = await login(email, password);
+        message.style.display = "block";
+        message.className = "success";
+        message.textContent = "Welcome back, " + user.email + "! Redirecting...";
+
+        // Redirect to dashboard after 1.5 seconds
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1500);
+
+      } catch (error) {
+        message.style.display = "block";
+        message.className = "error";
+        message.textContent = "Error: " + error.message;
+      }
     });
   </script>
-
-  <script type="module" src="scripts/auth.js"></script>
 </body>
 </html>
 

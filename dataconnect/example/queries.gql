@@ -1,0 +1,40 @@
+query ListAllGames @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  games {
+    id
+    name
+    minBet
+    maxBet
+    description
+    thumbnailUrl
+  }
+}
+
+query GetUserById($id: UUID!) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  user(id: $id) {
+    id
+    username
+    avatarUrl
+    virtualCurrency
+  }
+}
+
+mutation CreateNewAvatarItem($name: String!, $category: String!, $price: Int!, $imageUrl: String, $rarity: String) @auth(level: USER) {
+  avatarItem_insert(data: {
+    name: $name,
+    category: $category,
+    price: $price,
+    imageUrl: $imageUrl,
+    rarity: $rarity,
+    createdAt_expr: "request.time"
+  })
+}
+
+mutation JoinTournament($tournamentId: UUID!) @auth(level: USER) {
+  userTournamentEntry_insert(data: {
+    tournamentId: $tournamentId,
+    userId_expr: "auth.uid",
+    joinedAt_expr: "request.time",
+    finalRank: 0,
+    winnings: 0
+  })
+}

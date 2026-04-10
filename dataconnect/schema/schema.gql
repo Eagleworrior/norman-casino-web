@@ -1,0 +1,58 @@
+type User @table {
+  username: String!
+  createdAt: Timestamp!
+  virtualCurrency: Int!
+  avatarUrl: String
+  lastLogin: Timestamp
+  email: String
+}
+
+type Game @table {
+  name: String!
+  minBet: Int!
+  maxBet: Int!
+  createdAt: Timestamp!
+  description: String
+  thumbnailUrl: String
+  rules: String
+}
+
+type AvatarItem @table {
+  name: String!
+  category: String!
+  price: Int!
+  createdAt: Timestamp!
+  imageUrl: String
+  rarity: String
+}
+
+type UserGameStats @table(key: ["user", "game"]) {
+  user: User!
+  game: Game!
+  gamesPlayed: Int!
+  virtualCurrencyWon: Int!
+  virtualCurrencyLost: Int!
+  createdAt: Timestamp!
+  highestWin: Int
+}
+
+type Tournament @table {
+  game: Game!
+  name: String!
+  startTime: Timestamp!
+  endTime: Timestamp!
+  entryFee: Int!
+  prizePool: Int!
+  createdAt: Timestamp!
+  description: String
+  maxPlayers: Int
+}
+
+type UserTournamentEntry @table(key: ["user", "tournament"]) {
+  user: User!
+  tournament: Tournament!
+  joinedAt: Timestamp!
+  finalRank: Int!
+  winnings: Int!
+  score: Int
+}

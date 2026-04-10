@@ -1,0 +1,78 @@
+mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This operation is for seeding demo data and should be restricted to administrators only.") {
+  user1: user_insert(data: {
+    id: "user-1-uuid",
+    username: "playerOne",
+    email: "playerone@example.com",
+    createdAt: "2023-01-01T10:00:00Z",
+    virtualCurrency: 1000,
+    avatarUrl: "https://example.com/avatar/playerone.png",
+    lastLogin: "2023-01-01T10:00:00Z"
+  })
+  user2: user_insert(data: {
+    id: "user-2-uuid",
+    username: "playerTwo",
+    email: "playertwo@example.com",
+    createdAt: "2023-01-01T10:05:00Z",
+    virtualCurrency: 1500,
+    avatarUrl: "https://example.com/avatar/playertwo.png",
+    lastLogin: "2023-01-01T10:05:00Z"
+  })
+  game1: game_insert(data: {
+    id: "game-1-uuid",
+    name: "Slots Deluxe",
+    minBet: 10,
+    maxBet: 100,
+    createdAt: "2023-01-01T11:00:00Z",
+    description: "Spin the reels for big wins!",
+    thumbnailUrl: "https://example.com/thumbnails/slots.png",
+    rules: "Match 3 symbols for a payout."
+  })
+  game2: game_insert(data: {
+    id: "game-2-uuid",
+    name: "Poker Aces",
+    minBet: 50,
+    maxBet: 500,
+    createdAt: "2023-01-01T11:10:00Z",
+    description: "Classic poker action.",
+    thumbnailUrl: "https://example.com/thumbnails/poker.png",
+    rules: "Standard poker rules apply."
+  })
+  avatarItem1: avatarItem_insert(data: {
+    id: "avatar-item-1-uuid",
+    name: "Golden Crown",
+    category: "Headwear",
+    price: 500,
+    createdAt: "2023-01-01T12:00:00Z",
+    imageUrl: "https://example.com/avatars/crown.png",
+    rarity: "Legendary"
+  })
+  userGameStats1: userGameStats_insert(data: {
+    userId: "user-1-uuid",
+    gameId: "game-1-uuid",
+    gamesPlayed: 10,
+    virtualCurrencyWon: 200,
+    virtualCurrencyLost: 100,
+    createdAt: "2023-01-01T13:00:00Z",
+    highestWin: 50
+  })
+  tournament1: tournament_insert(data: {
+    id: "tournament-1-uuid",
+    gameId: "game-1-uuid",
+    name: "New Year Slots Blitz",
+    startTime: "2024-01-01T14:00:00Z",
+    endTime: "2024-01-01T16:00:00Z",
+    entryFee: 50,
+    prizePool: 1000,
+    createdAt: "2023-12-20T09:00:00Z",
+    description: "A quick slots tournament to kick off the new year!",
+    maxPlayers: 100
+  })
+  userTournamentEntry1: userTournamentEntry_insert(data: {
+    userId: "user-1-uuid",
+    tournamentId: "tournament-1-uuid",
+    joinedAt: "2024-01-01T13:30:00Z",
+    finalRank: 5,
+    winnings: 100,
+    score: 1500
+  })
+}
